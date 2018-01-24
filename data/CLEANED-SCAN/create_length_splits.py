@@ -180,5 +180,5 @@ if __name__ == '__main__':
     create_split(split_on='input', included=range(7, 10), split_name='experiment2e_input_long_to_short')
     create_split(split_on='input', included=[1, 2, 3, 6, 7, 8], split_name='experiment2f_input_interleaved_short_to_long')
 
-    sample_equally_from_file('output', 'length_split/experiment4a_output_short_to_long_equally_distributed/tasks_train.txt', 'length_split/experiment4a_output_short_to_long_equally_distributed/output.txt', 10000)
+    sample_equally_from_file('output', 'length_split/experiment4b_output_long_to_short_equally_distributed/tasks_train.txt', 'length_split/experiment4b_output_long_to_short_equally_distributed/output.txt', 10000)
 
