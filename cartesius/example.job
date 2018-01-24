@@ -1,0 +1,26 @@
+#!/bin/bash
+#SBATCH -N 1          # request 1 node(s)
+#SBATCH -p gpu_short        # gpu for production, gpu_short for test
+#SBATCH -t 0-00:55:00 # 5 days is the max for gpu, 1 h max for short
+#SBATCH -J jb_test
+#SBATCH -n 1
+
+# prepare dependent job to move data back
+# use afterany to always execute, or afterok on successful exit of this job
+# uncomment this to automatically archive job
+#sbatch --dependency=afterany:$SLURM_JOB_ID archive.job $SLURM_JOB_ID $(readlink -f $TMPDIR)
+
+echo start of job
+
+module load python
+module load mkl
+module load cuda/8.0.44
+module load torch7
+
+#cd ~/git/nmt/jobs
+
+# nmt.conf defines 2 problems that will run in parallel on the node
+# each using 1 GPU
+srun --multi-prog example.conf
+
+echo end of job

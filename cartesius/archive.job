@@ -1,0 +1,18 @@
+#!/bin/bash
+#SBATCH -p staging
+#SBATCH -t 1-00:00:00
+#SBATCH -J archiving
+#
+# change directory to the temporary directory of the computation job
+cd $2
+
+# create output dir for this job
+OUTPUT_DIR=$HOME/data/jobs/$SLURM_JOB_ID
+mkdir -p $OUTPUT_DIR
+
+# copy everything over to the output directory
+# you can be more specific of what job output files you want to copy
+cp -R * $OUTPUT_DIR/
+
+# archive the whole job, too. 
+tar cvf /archive/$USER/job_$1.tar *

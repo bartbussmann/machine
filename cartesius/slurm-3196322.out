@@ -1,0 +1,14 @@
+start of job
+ImportError: numpy.core.multiarray failed to import
+Traceback (most recent call last):
+  File "train.py", line 1, in <module>
+    import onmt
+  File "/nfs/home5/ebruni/metaphora-detection/OpenNMT/onmt/__init__.py", line 2, in <module>
+    import onmt.Models
+  File "/nfs/home5/ebruni/metaphora-detection/OpenNMT/onmt/Models.py", line 1, in <module>
+    import torch
+  File "/home/ebruni/.local/lib/python2.7/site-packages/torch/__init__.py", line 46, in <module>
+    from torch._C import *
+ImportError: numpy.core.multiarray failed to import
+Done
+end of job
