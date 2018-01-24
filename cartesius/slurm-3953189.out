@@ -1,0 +1,12 @@
+start of job
+Train model on example data
+python: can't open file 'train_model.py': [Errno 2] No such file or directory
+Evaluate model on test data
+ls: cannot access example/: No such file or directory
+python: can't open file 'evaluate.py': [Errno 2] No such file or directory
+Run in inference mode
+ls: cannot access example/: No such file or directory
+python: can't open file 'infer.py': [Errno 2] No such file or directory
+srun: error: gcn63: task 0: Exited with exit code 2
+srun: Terminating job step 3953189.0
+end of job
