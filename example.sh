@@ -1,9 +1,9 @@
 #! /bin/sh
 
-TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment4b_output_long_to_short_equally_distributed/output.txt
-DEV_PATH=data/CLEANED-SCAN/length_split/experiment4b_output_long_to_short_equally_distributed/tasks_test.txt
-EXPT_DIR=checkpoints_experiment_2a-1
-ATTENTION=false
+TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment4a_output_short_to_long_equally_distributed/output.txt
+DEV_PATH=data/CLEANED-SCAN/length_split/experiment4a_output_short_to_long_equally_distributed/tasks_test.txt
+EXPT_DIR=checkpoints_experiment_4a
+ATTENTION=true
 CUDA=0
 
 # set values
