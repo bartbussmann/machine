@@ -1,8 +1,8 @@
 #! /bin/sh
 
-TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment4a_output_short_to_long_equally_distributed/output_all_shuffled.txt
-DEV_PATH=data/CLEANED-SCAN/length_split/experiment4a_output_short_to_long_equally_distributed/tasks_test.txt
-EXPT_DIR=checkpoints_experiment_4a_all_shuffled
+TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment4c_output_interleaved_short_to_long_equally_distributed/output_all_shuffled.txt
+DEV_PATH=data/CLEANED-SCAN/length_split/experiment4c_output_interleaved_short_to_long_equally_distributed/tasks_test.txt
+EXPT_DIR=checkpoints_experiment_4c_all_shuffled
 ATTENTION=true
 CUDA=0
 
