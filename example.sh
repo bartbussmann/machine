@@ -1,8 +1,8 @@
 #! /bin/sh
 
-TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment4b_output_long_to_short_equally_distributed/output_all_shuffled.txt
-DEV_PATH=data/CLEANED-SCAN/length_split/experiment4b_output_long_to_short_equally_distributed/tasks_test.txt
-EXPT_DIR=checkpoints_experiment_4b_all_shuffled
+TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment5/train.txt
+DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/dev.txt/
+EXPT_DIR=checkpoints_experiment_5
 ATTENTION=true
 CUDA=0
 
@@ -43,4 +43,5 @@ python train_model.py \
     $( (( $ATTENTION )) && echo '--attention' ) \
     --print_every $PRINT_EVERY \
     --save_every $SAVE_EVERY \
+    --log-level 'debug' \
 --cuda_device $CUDA
