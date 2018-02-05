@@ -1,8 +1,8 @@
 #! /bin/sh
 
 TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment5/train.txt
-DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/dev.txt/
-EXPT_DIR=checkpoints_experiment_5_5
+DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/dev.txt
+EXPT_DIR=checkpoints_experiment_5_1
 ATTENTION=true
 CUDA=0
 
