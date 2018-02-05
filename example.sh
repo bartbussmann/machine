@@ -2,7 +2,7 @@
 
 TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment5/train.txt
 DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/dev.txt/
-EXPT_DIR=checkpoints_experiment_5_3
+EXPT_DIR=checkpoints_experiment_5_4
 ATTENTION=true
 CUDA=0
 
