@@ -6,6 +6,8 @@ import torchtext
 import seq2seq
 from seq2seq.loss import NLLLoss
 
+import numpy as np
+
 class Evaluator(object):
     """ Class to evaluate models with given datasets.
 
@@ -47,7 +49,9 @@ class Evaluator(object):
             device=device, train=False)
         tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
         pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
-
+        #input_words = {k: [0.0] for k in range(1,8)}
+        #att_dict = {j: dict(input_words) for j in range(1, 14)}
+        att_dict = {}
         for batch in batch_iterator:
             input_variables, input_lengths  = getattr(batch, seq2seq.src_field_name)
             target_variables = getattr(batch, seq2seq.tgt_field_name)
@@ -56,6 +60,23 @@ class Evaluator(object):
 
             # Evaluation
             seqlist = other['sequence']
+
+            attentions = [att.squeeze() for att in other['attention_score']]
+
+            for q, input_seq in enumerate(input_variables.data):
+                prediction = [step.squeeze().data[q] for step in seqlist]
+                for i, output_word in enumerate(target_variables[q][1:].data.numpy()):
+                    if target_variables.data[q][i+1] != pad:
+                        if output_word in att_dict:
+                            output_word_dict = att_dict[output_word]
+                        else:
+                            output_word_dict = {}
+                            att_dict[output_word] = output_word_dict
+                        for j, input_word in enumerate(input_seq):
+                            if input_word in output_word_dict:
+                                output_word_dict[input_word].append(attentions[i][q][j].data.numpy()[0])
+                            else:
+                                output_word_dict[input_word] = [attentions[i][q][j].data.numpy()[0]]
 
             match_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
             total_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
@@ -76,6 +97,14 @@ class Evaluator(object):
             seq_match += match_per_seq.eq(total_per_seq).sum()
             seq_total += total_per_seq.shape[0]
 
+        cooccurrences = np.array(
+            [[np.mean(att_dict[output_word][input_word]) for input_word in sorted(att_dict[output_word])] for
+             output_word in sorted(att_dict)])
+
+
+
+        variance = sum(np.var(cooccurrences, axis=0))
+
         if word_total == 0:
             accuracy = float('nan')
         else:
@@ -86,4 +115,4 @@ class Evaluator(object):
         else:
             seq_accuracy = seq_match/seq_total
 
-        return loss.get_loss(), accuracy, seq_accuracy
+        return loss.get_loss(), accuracy, seq_accuracy, variance

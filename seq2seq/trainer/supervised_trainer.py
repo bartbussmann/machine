@@ -88,10 +88,11 @@ class SupervisedTrainer(object):
 
         # store initial model to be sure at least one model is stored
         eval_data = dev_data or data
-        loss, accuracy, seq_accuracy = self.evaluator.evaluate(model, eval_data)
+        loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data)
         loss_best = top_k*[loss]
+        var_best = top_k*[variance]
         best_checkpoints = top_k*[None]
-        model_name = 'acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (accuracy, seq_accuracy, loss, 0)
+        model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, 0)
         best_checkpoints[0] = model_name
 
         Checkpoint(model=model,
@@ -137,17 +138,21 @@ class SupervisedTrainer(object):
                 # check if new model should be saved
                 if step % self.checkpoint_every == 0 or step == total_steps:
                     # compute dev loss
-                    loss, accuracy, seq_accuracy = self.evaluator.evaluate(model, eval_data)
+                    loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data)
                     max_eval_loss = max(loss_best)
-                    if loss < max_eval_loss:
-                            index_max = loss_best.index(max_eval_loss)
+                    max_variance = max(var_best)
+                    #if loss < max_eval_loss:
+                    if variance > max_variance:
+                            #index_max = loss_best.index(max_eval_loss)
+                            index_max = var_best.index(max_variance)
                             # rm prev model
                             if best_checkpoints[index_max] is not None:
                                 shutil.rmtree(os.path.join(self.expt_dir, best_checkpoints[index_max]))
-                            model_name = 'acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (accuracy, seq_accuracy, loss, step)
+                            model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, step)
 
                             best_checkpoints[index_max] = model_name
                             loss_best[index_max] = loss
+                            var_best[index_max] = variance
 
                             # save model
                             Checkpoint(model=model,
@@ -162,9 +167,9 @@ class SupervisedTrainer(object):
             epoch_loss_total = 0
             log_msg = "Finished epoch %d: Train %s: %.4f" % (epoch, self.loss.name, epoch_loss_avg)
             if dev_data is not None:
-                dev_loss, accuracy, seq_accuracy = self.evaluator.evaluate(model, dev_data)
+                dev_loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, dev_data)
                 self.optimizer.update(dev_loss, epoch)
-                log_msg += ", Dev %s: %.4f, Accuracy: %.4f, Sequence Accuracy: %.4f" % (self.loss.name, dev_loss, accuracy, seq_accuracy)
+                log_msg += ", Dev %s: %.4f, Accuracy: %.4f, Sequence Accuracy: %.4f, Variance: %.4f" % (self.loss.name, dev_loss, accuracy, seq_accuracy, variance)
                 model.train(mode=True)
             else:
                 self.optimizer.update(epoch_loss_avg, epoch)

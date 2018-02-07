@@ -1,6 +1,7 @@
 import os
 import argparse
 import logging
+import random
 
 import torch
 from torch.optim.lr_scheduler import StepLR
@@ -54,7 +55,7 @@ if opt.resume and not opt.load_checkpoint:
     parser.error('load_checkpoint argument is required to resume training from checkpoint')
 
 LOG_FORMAT = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-logging.basicConfig(format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()))
+logging.basicConfig(filename=str(random.randint(0,10000000)) + '.log', format=LOG_FORMAT, level=getattr(logging, opt.log_level.upper()))
 logging.info(opt)
 
 if torch.cuda.is_available():
