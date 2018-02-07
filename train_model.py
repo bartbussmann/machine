@@ -119,7 +119,7 @@ else:
     decoder = DecoderRNN(len(tgt.vocab), max_len, decoder_hidden_size,
                          dropout_p=opt.dropout_p_decoder,
                          n_layers=opt.n_layers,
-                         use_attention=opt.attention,
+                         use_attention=True,
                          bidirectional=opt.bidirectional,
                          rnn_cell=opt.rnn_cell,
                          eos_id=tgt.eos_id, sos_id=tgt.sos_id)
