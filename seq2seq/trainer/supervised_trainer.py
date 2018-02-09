@@ -65,6 +65,7 @@ class SupervisedTrainer(object):
         for step, step_output in enumerate(decoder_outputs):
             batch_size = target_variable.size(0)
             loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
+
         loss.acc_loss += self.get_regularization(input_variable, target_variable, other['attention_score'], run_step)
         # Backward propagation
         model.zero_grad()
@@ -104,8 +105,7 @@ class SupervisedTrainer(object):
 
         variance = sum(np.var(cooccurrences, axis=0))
 
-        print(variance)
-        regularization = 100*(3.25 - variance)
+        regularization = 1000*(3.25 - variance)
 
         # Log to tensorboard
         self.writer.add_scalar("attention_variance/train", variance, step)
