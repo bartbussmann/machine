@@ -65,7 +65,7 @@ class Evaluator(object):
 
             for q, input_seq in enumerate(input_variables.data):
                 prediction = [step.squeeze().data[q] for step in seqlist]
-                for i, output_word in enumerate(target_variables[q][1:].data.numpy()):
+                for i, output_word in enumerate(target_variables[q][1:].data.cpu().numpy()):
                     if target_variables.data[q][i+1] != pad:
                         if output_word in att_dict:
                             output_word_dict = att_dict[output_word]

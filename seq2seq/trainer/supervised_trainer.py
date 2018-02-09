@@ -8,6 +8,7 @@ import shutil
 import torch
 import torchtext
 from torch import optim
+import numpy as np
 
 import seq2seq
 from seq2seq.evaluator import Evaluator
@@ -59,12 +60,50 @@ class SupervisedTrainer(object):
         for step, step_output in enumerate(decoder_outputs):
             batch_size = target_variable.size(0)
             loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
+        loss.acc_loss += self.get_regularization(input_variable, target_variable, other['attention_score'])
         # Backward propagation
         model.zero_grad()
         loss.backward()
         self.optimizer.step()
 
         return loss.get_loss()
+
+    def get_regularization(self, input, output, attentions):
+        att_dict = {}
+        attentions = [att.squeeze() for att in attentions]
+        for q, input_seq in enumerate(input):
+            for i, output_word in enumerate(output[q][1:].data.cpu().numpy()):
+                if output.data[q][i + 1] != 1:
+                    if output_word in att_dict:
+                        output_word_dict = att_dict[output_word]
+                    else:
+                        output_word_dict = {}
+                        att_dict[output_word] = output_word_dict
+                    for j, input_word in enumerate(input_seq.data):
+                        if input_word in output_word_dict:
+                            output_word_dict[input_word].append(attentions[i][q][j].data.cpu().numpy()[0])
+                        else:
+                            output_word_dict[input_word] = [attentions[i][q][j].data.cpu().numpy()[0]]
+
+        for i in range(2,9):
+            if i not in att_dict:
+                att_dict[i] = {}
+            for j in range(1,15):
+                if j not in att_dict[i]:
+                    att_dict[i][j] = [0.0]
+
+
+        cooccurrences = np.array(
+            [[np.mean(att_dict[output_word][input_word]) for input_word in sorted(att_dict[output_word])] for
+             output_word in sorted(att_dict)])
+
+        variance = sum(np.var(cooccurrences, axis=0))
+
+        print(variance)
+        regularization = 100*(3.25 - variance)
+
+        return regularization
+
 
     def _train_epoches(self, data, model, n_epochs, start_epoch, start_step,
                        dev_data=None, teacher_forcing_ratio=0, top_k=5):
