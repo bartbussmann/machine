@@ -74,9 +74,9 @@ class Evaluator(object):
                             att_dict[output_word] = output_word_dict
                         for j, input_word in enumerate(input_seq):
                             if input_word in output_word_dict:
-                                output_word_dict[input_word].append(attentions[i][q][j].data.numpy()[0])
+                                output_word_dict[input_word].append(attentions[i][q][j].data.cpu().numpy()[0])
                             else:
-                                output_word_dict[input_word] = [attentions[i][q][j].data.numpy()[0]]
+                                output_word_dict[input_word] = [attentions[i][q][j].data.cpu().numpy()[0]]
 
             match_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
             total_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
