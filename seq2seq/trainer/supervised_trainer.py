@@ -61,6 +61,7 @@ class SupervisedTrainer(object):
             batch_size = target_variable.size(0)
             loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
         loss.acc_loss += self.get_regularization(input_variable, target_variable, other['attention_score'])
+
         # Backward propagation
         model.zero_grad()
         loss.backward()
@@ -99,7 +100,7 @@ class SupervisedTrainer(object):
 
         variance = sum(np.var(cooccurrences, axis=0))
 
-        regularization = 100*(3.25 - variance)
+        regularization = 1000*(3.25 - variance)
 
         return regularization
 
