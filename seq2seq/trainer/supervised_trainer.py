@@ -99,7 +99,6 @@ class SupervisedTrainer(object):
 
         variance = sum(np.var(cooccurrences, axis=0))
 
-        print(variance)
         regularization = 100*(3.25 - variance)
 
         return regularization
