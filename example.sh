@@ -44,4 +44,4 @@ python train_model.py \
     --print_every $PRINT_EVERY \
     --save_every $SAVE_EVERY \
     --log-level 'debug' \
---cuda_device $CUDA
+    --cuda_device $CUDA

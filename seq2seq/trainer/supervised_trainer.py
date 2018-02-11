@@ -3,11 +3,13 @@ import logging
 import os
 import random
 import time
+import datetime
 import shutil
 
 import torch
 import torchtext
 from torch import optim
+from tensorboardX import SummaryWriter
 import numpy as np
 
 import seq2seq
@@ -50,7 +52,10 @@ class SupervisedTrainer(object):
 
         self.logger = logging.getLogger(__name__)
 
-    def _train_batch(self, input_variable, input_lengths, target_variable, model, teacher_forcing_ratio):
+        self.tensorboard_dir = os.path.join("tensorboard_runs", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        self.writer = SummaryWriter(self.tensorboard_dir)
+
+    def _train_batch(self, input_variable, input_lengths, target_variable, model, teacher_forcing_ratio, run_step):
         loss = self.loss
         # Forward propagation
         decoder_outputs, decoder_hidden, other = model(input_variable, input_lengths, target_variable,
@@ -60,8 +65,8 @@ class SupervisedTrainer(object):
         for step, step_output in enumerate(decoder_outputs):
             batch_size = target_variable.size(0)
             loss.eval_batch(step_output.contiguous().view(batch_size, -1), target_variable[:, step + 1])
-        loss.acc_loss += self.get_regularization(input_variable, target_variable, other['attention_score'])
 
+        loss.acc_loss += self.get_regularization(input_variable, target_variable, other['attention_score'], run_step)
         # Backward propagation
         model.zero_grad()
         loss.backward()
@@ -69,7 +74,7 @@ class SupervisedTrainer(object):
 
         return loss.get_loss()
 
-    def get_regularization(self, input, output, attentions):
+    def get_regularization(self, input, output, attentions, step):
         att_dict = {}
         attentions = [att.squeeze() for att in attentions]
         for q, input_seq in enumerate(input):
@@ -102,6 +107,9 @@ class SupervisedTrainer(object):
 
         regularization = 1000*(3.25 - variance)
 
+        # Log to tensorboard
+        self.writer.add_scalar("attention_variance/train", variance, step)
+
         return regularization
 
 
@@ -127,12 +135,16 @@ class SupervisedTrainer(object):
 
         # store initial model to be sure at least one model is stored
         eval_data = dev_data or data
-        loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data)
+        loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, self.writer, step)
         loss_best = top_k*[loss]
         var_best = top_k*[variance]
         best_checkpoints = top_k*[None]
         model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, 0)
         best_checkpoints[0] = model_name
+
+        # Log to tensorboard
+        self.writer.add_scalar("loss/validation", loss, step)
+        self.writer.add_scalar("attention_variance/validation", variance, step)
 
         Checkpoint(model=model,
                    optimizer=self.optimizer,
@@ -158,11 +170,14 @@ class SupervisedTrainer(object):
                 input_variables, input_lengths = getattr(batch, seq2seq.src_field_name)
                 target_variables = getattr(batch, seq2seq.tgt_field_name)
 
-                loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio)
+                loss = self._train_batch(input_variables, input_lengths.tolist(), target_variables, model, teacher_forcing_ratio, step)
 
                 # Record average loss
                 print_loss_total += loss
                 epoch_loss_total += loss
+
+                # Log to tensorboard
+                self.writer.add_scalar("loss/train", loss, step)
 
                 # print log info according to print_every parm
                 if step % self.print_every == 0 and step_elapsed > self.print_every:
@@ -177,9 +192,14 @@ class SupervisedTrainer(object):
                 # check if new model should be saved
                 if step % self.checkpoint_every == 0 or step == total_steps:
                     # compute dev loss
-                    loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data)
+                    loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, self.writer, step)
                     max_eval_loss = max(loss_best)
                     max_variance = max(var_best)
+
+                    # Log to tensorboard
+                    self.writer.add_scalar("loss/validation", loss, step)
+                    self.writer.add_scalar("attention_variance/validation", variance, step)
+                    
                     #if loss < max_eval_loss:
                     if variance > max_variance:
                             #index_max = loss_best.index(max_eval_loss)
@@ -206,7 +226,7 @@ class SupervisedTrainer(object):
             epoch_loss_total = 0
             log_msg = "Finished epoch %d: Train %s: %.4f" % (epoch, self.loss.name, epoch_loss_avg)
             if dev_data is not None:
-                dev_loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, dev_data)
+                dev_loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, dev_data, self.writer, step)
                 self.optimizer.update(dev_loss, epoch)
                 log_msg += ", Dev %s: %.4f, Accuracy: %.4f, Sequence Accuracy: %.4f, Variance: %.4f" % (self.loss.name, dev_loss, accuracy, seq_accuracy, variance)
                 model.train(mode=True)
@@ -272,4 +292,9 @@ class SupervisedTrainer(object):
                             start_epoch, step, dev_data=dev_data,
                             teacher_forcing_ratio=teacher_forcing_ratio,
                             top_k=top_k)
+
+        # export scalar data to JSON for external processing
+        self.writer.export_scalars_to_json(os.path.join(self.tensorboard_dir, "all_scalars.json"))
+        self.writer.close()
+
         return model

@@ -20,7 +20,7 @@ class Evaluator(object):
         self.loss = loss
         self.batch_size = batch_size
 
-    def evaluate(self, model, data):
+    def evaluate(self, model, data, writer=None, run_step=0):
         """ Evaluate a model on given dataset and return performance.
 
         Args:
@@ -101,7 +101,9 @@ class Evaluator(object):
             [[np.mean(att_dict[output_word][input_word]) for input_word in sorted(att_dict[output_word])] for
              output_word in sorted(att_dict)])
 
-
+        if writer is not None:
+            cooccurrences_tensor = torch.Tensor(cooccurrences)
+            writer.add_image("co-occurences", cooccurrences_tensor, run_step)
 
         variance = sum(np.var(cooccurrences, axis=0))
 
