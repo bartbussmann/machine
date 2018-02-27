@@ -14,7 +14,7 @@ from torch.autograd import Variable
 
 import seq2seq
 from seq2seq.evaluator import Evaluator
-from seq2seq.loss import NLLLoss, Variance
+from seq2seq.loss import NLLLoss, Variance, Variance2
 from seq2seq.optim import Optimizer
 from seq2seq.util.checkpoint import Checkpoint
 
@@ -73,7 +73,7 @@ class SupervisedTrainer(object):
         # add regularization loss
         input_vocab_size = model.encoder.vocab_size
         output_vocab_size = model.decoder.vocab_size
-        variance, _ = Variance.get_variance(input_variable, other['sequence'], other['attention_score'], input_vocab_size, output_vocab_size, reg_scale)  
+        variance2, _ = Variance2.get_variance(input_variable, other['sequence'], other['attention_score'], input_vocab_size, output_vocab_size, reg_scale)
 
         self.writer.add_scalar("variance/train", variance, run_step)
 

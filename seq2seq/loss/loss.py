@@ -182,8 +182,8 @@ class Variance(object):
 
             # loop over values in attention matrix
             count = 0
-            for seq in xrange(attention.size(0)):
-                for i in xrange(attention.size(1)):
+            for seq in range(attention.size(0)):
+                for i in range(attention.size(1)):
                     input_index = inputs[seq][i].data[0]
                     # output_index = outputs[seq][output_step].data[0]
                     output_index = outputs[output_step][seq].data[0]
@@ -196,6 +196,45 @@ class Variance(object):
             # add values to confusion matrix
             confusion_matrix.put_(Variable(indices), attention_flat, accumulate=True)
             output_step += 1
+
+        # normalise rows
+        confusion_matrix = torch.nn.functional.normalize(confusion_matrix, p=1, dim=1)
+        full_confusion_matrix = confusion_matrix
+
+        # Remove rows <unk>, <pad>, <sos>
+        row_ids = Variable(torch.LongTensor([2, 3, 4, 5, 6, 7, 8]))
+        confusion_matrix = confusion_matrix.index_select(0, row_ids)
+
+        # Only retain columns jump, run, look, walk
+        col_ids = Variable(torch.LongTensor([10, 11, 12, 13]))
+        confusion_matrix = confusion_matrix.index_select(1, col_ids)
+
+        # compute variance of the confusion matrix:  c1
+        variance = torch.sum(torch.var(confusion_matrix, 0))
+        if torch.cuda.is_available():
+            variance = variance.cuda()
+
+        return variance, full_confusion_matrix
+
+class Variance2(object):
+    @staticmethod
+    def get_variance(inputs, outputs, attentions, input_vocab_size, output_vocab_size, reg_scale):
+        # create empty confusion matrix
+        confusion_matrix = torch.zeros(output_vocab_size, input_vocab_size)
+
+        if torch.cuda.is_available():
+            pass
+            # confusion_matrix = confusion_matrix.cuda()
+        confusion_matrix = Variable(confusion_matrix)
+
+        attention_matrix = torch.cat(attentions).view(len(attentions), attentions[0].size()[0], inputs.size()[1])
+        output_matrix = torch.cat(outputs).view(len(attentions), attentions[0].size()[0])
+
+        multiplied_outputs = output_matrix*input_vocab_size
+        multiplied_outputs_expanded = multiplied_outputs.unsqueeze(2).expand(multiplied_outputs.size()[0], multiplied_outputs.size()[1], inputs.size()[1])
+        indices = (multiplied_outputs_expanded + inputs.expand_as(multiplied_outputs_expanded)).contiguous().view(-1)
+
+        confusion_matrix.put_(indices, attention_matrix.contiguous().view(-1), accumulate=True)
 
         # normalise rows
         confusion_matrix = torch.nn.functional.normalize(confusion_matrix, p=1, dim=1)

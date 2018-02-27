@@ -1,1 +1,1 @@
-from .loss import NLLLoss, Perplexity, Variance
+from .loss import NLLLoss, Perplexity, Variance, Variance2
