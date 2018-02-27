@@ -243,10 +243,14 @@ class Variance2(object):
 
         # Remove rows <unk>, <pad>, <sos>
         row_ids = Variable(torch.LongTensor([2, 3, 4, 5, 6, 7, 8]))
+        if torch.cuda.is_available():
+            row_ids = row_ids.cuda()
         confusion_matrix = confusion_matrix.index_select(0, row_ids)
 
         # Only retain columns jump, run, look, walk
         col_ids = Variable(torch.LongTensor([10, 11, 12, 13]))
+        if torch.cuda.is_available():
+            col_ids = col_ids.cuda()
         confusion_matrix = confusion_matrix.index_select(1, col_ids)
 
         # compute variance of the confusion matrix:  c1
