@@ -247,8 +247,8 @@ class Variance2(object):
             row_ids = row_ids.cuda()
         confusion_matrix = confusion_matrix.index_select(0, row_ids)
 
-        # Only retain columns jump, run, look, walk, left, right
-        col_ids = Variable(torch.LongTensor([2, 3, 10, 11, 12, 13]))
+        # Only retain columns jump, run, look, walk, left, right, turn
+        col_ids = Variable(torch.LongTensor([2, 3, 10, 11, 12, 13, 14]))
         if torch.cuda.is_available():
             col_ids = col_ids.cuda()
         confusion_matrix = confusion_matrix.index_select(1, col_ids)
