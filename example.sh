@@ -3,13 +3,13 @@
 nvidia-smi -ac 3004,875 -i 0
 nvidia-smi -ac 3004,875 -i 1
 
-TRAIN_PATH=data/CLEANED-SCAN/simple_split/train.txt
-DEV_PATH=data/CLEANED-SCAN/simple_split/dev.txt
-EXPT_DIR=variance_experiment1
+TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment5/train.txt
+DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/dev.txt
+EXPT_DIR=variance_experiment_only_short_primitives_left_right_turn
 CUDA=0
 
 # set values
-EPOCHS=50
+EPOCHS=70
 OPTIMIZER='adam'
 LR=0.001
 RNN_CELL='lstm'

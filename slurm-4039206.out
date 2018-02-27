@@ -1,0 +1,17 @@
+start of job
+Applications clocks set to "(MEM 3004, SM 875)" for GPU 00000000:02:00.0
+All done.
+Applications clocks set to "(MEM 3004, SM 875)" for GPU 00000000:82:00.0
+All done.
+Train model on example data
+Traceback (most recent call last):
+  File "train_model.py", line 11, in <module>
+    from seq2seq.trainer import SupervisedTrainer
+  File "/nfs/home4/bartbuss/machine2/machine/seq2seq/trainer/__init__.py", line 1, in <module>
+    from .supervised_trainer import SupervisedTrainer
+  File "/nfs/home4/bartbuss/machine2/machine/seq2seq/trainer/supervised_trainer.py", line 12, in <module>
+    from tensorboardX import SummaryWriter
+ImportError: No module named tensorboardX
+srun: error: gcn4: task 0: Exited with exit code 1
+srun: Terminating job step 4039206.0
+end of job

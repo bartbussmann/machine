@@ -1,0 +1,26 @@
+start of job
+Applications clocks set to "(MEM 3004, SM 875)" for GPU 00000000:02:00.0
+All done.
+Applications clocks set to "(MEM 3004, SM 875)" for GPU 00000000:82:00.0
+All done.
+Train model on example data
+2018-02-27 22:21:38,389 root         INFO     Namespace(attention=True, batch_size=128, bidirectional=False, cuda_device=0, dev='data/CLEANED-SCAN/simple_split/dev.txt', dropout_p_decoder=0.5, dropout_p_encoder=0.5, embedding_size=200, epochs=70, hidden_size=200, load_checkpoint=None, log_level='debug', lr=0.001, max_len=50, n_layers=2, optim='adam', output_dir='variance_experiment_all_data_primitives', print_every=20, profile=False, reg_scale=1000, resume=False, rnn_cell='lstm', save_every=133, src_vocab=50000, teacher_forcing_ratio=0.5, tgt_vocab=50000, train='data/CLEANED-SCAN/simple_split/train.txt')
+2018-02-27 22:21:44,115 root         DEBUG    Input vocab: ['<unk>', '<pad>', u'left', u'right', u'twice', u'thrice', u'opposite', u'around', u'and', u'after', u'jump', u'look', u'run', u'walk', u'turn']
+2018-02-27 22:21:44,115 root         DEBUG    Output vocab: ['<unk>', '<pad>', u'I_TURN_LEFT', u'I_TURN_RIGHT', u'I_JUMP', u'I_LOOK', u'I_WALK', u'I_RUN', '<eos>', '<sos>']
+2018-02-27 22:21:44,455 seq2seq.trainer.supervised_trainer INFO     Optimizer: <torch.optim.adam.Adam object at 0x2ab16128cd10>, Scheduler: None
+Cuda device set to 0
+Traceback (most recent call last):
+  File "train_model.py", line 179, in <module>
+    top_k=1)
+  File "/nfs/home4/bartbuss/machine2/machine/seq2seq/trainer/supervised_trainer.py", line 268, in train
+    top_k=top_k, reg_scale=reg_scale)
+  File "/nfs/home4/bartbuss/machine2/machine/seq2seq/trainer/supervised_trainer.py", line 112, in _train_epoches
+    loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, reg_scale, self.writer, step)
+  File "/nfs/home4/bartbuss/machine2/machine/seq2seq/evaluator/evaluator.py", line 69, in evaluate
+    input_vocab_size, output_vocab_size, reg_scale)
+  File "/nfs/home4/bartbuss/machine2/machine/seq2seq/loss/loss.py", line 237, in get_variance
+    confusion_matrix.put_(indices, attention_matrix.contiguous().view(-1), accumulate=True)
+RuntimeError: Expected object of type Variable[torch.LongTensor] but found type Variable[torch.cuda.LongTensor] for argument #1 'index'
+srun: error: gcn62: task 0: Exited with exit code 1
+srun: Terminating job step 4041669.0
+end of job

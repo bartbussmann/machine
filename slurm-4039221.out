@@ -1,0 +1,82 @@
+start of job
+Applications clocks set to "(MEM 3004, SM 875)" for GPU 00000000:02:00.0
+All done.
+Applications clocks set to "(MEM 3004, SM 875)" for GPU 00000000:82:00.0
+All done.
+Train model on example data
+2018-02-27 15:53:48,418 root         INFO     Namespace(attention=True, batch_size=128, bidirectional=False, cuda_device=0, dev='data/CLEANED-SCAN/simple_split/dev.txt', dropout_p_decoder=0.5, dropout_p_encoder=0.5, embedding_size=200, epochs=50, hidden_size=200, load_checkpoint=None, log_level='debug', lr=0.001, max_len=50, n_layers=2, optim='adam', output_dir='variance_experiment1', print_every=20, profile=False, reg_scale=1000, resume=False, rnn_cell='lstm', save_every=133, src_vocab=50000, teacher_forcing_ratio=0.5, tgt_vocab=50000, train='data/CLEANED-SCAN/simple_split/train.txt')
+2018-02-27 15:53:53,348 root         DEBUG    Input vocab: ['<unk>', '<pad>', u'left', u'right', u'twice', u'thrice', u'opposite', u'around', u'and', u'after', u'jump', u'look', u'run', u'walk', u'turn']
+2018-02-27 15:53:53,349 root         DEBUG    Output vocab: ['<unk>', '<pad>', u'I_TURN_LEFT', u'I_TURN_RIGHT', u'I_JUMP', u'I_LOOK', u'I_WALK', u'I_RUN', '<eos>', '<sos>']
+2018-02-27 15:53:53,355 seq2seq.trainer.supervised_trainer INFO     Optimizer: <torch.optim.adam.Adam object at 0x2ab96a303b50>, Scheduler: None
+Cuda device set to 0
+TODO: Evaluator loss and variance are not correct
+2018-02-27 15:54:26,912 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 1, Step: 0
+2018-02-27 15:56:55,971 seq2seq.trainer.supervised_trainer INFO     Progress: 0%, Train Perplexity: 13.0592
+2018-02-27 15:58:13,632 seq2seq.trainer.supervised_trainer INFO     Progress: 1%, Train Perplexity: 5.1128
+2018-02-27 15:59:36,843 seq2seq.trainer.supervised_trainer INFO     Progress: 1%, Train Perplexity: 4.4178
+2018-02-27 16:00:46,437 seq2seq.trainer.supervised_trainer INFO     Progress: 1%, Train Perplexity: 3.6583
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:02:14,444 seq2seq.trainer.supervised_trainer INFO     Finished epoch 1: Train Perplexity: 4.9648, Dev Perplexity: 3.6184, Accuracy: 0.4444, Sequence Accuracy: 0.0000, Variance: 0.0229
+2018-02-27 16:02:14,444 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 2, Step: 115
+2018-02-27 16:02:37,869 seq2seq.trainer.supervised_trainer INFO     Progress: 2%, Train Perplexity: 3.0418
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:04:00,041 seq2seq.trainer.supervised_trainer DEBUG    Saved checkpoint var_0.04_acc_0.44_seq_acc_0.00_ppl_3.59_s133
+2018-02-27 16:04:22,899 seq2seq.trainer.supervised_trainer INFO     Progress: 2%, Train Perplexity: 2.8091
+2018-02-27 16:05:38,778 seq2seq.trainer.supervised_trainer INFO     Progress: 2%, Train Perplexity: 2.6635
+2018-02-27 16:07:02,538 seq2seq.trainer.supervised_trainer INFO     Progress: 3%, Train Perplexity: 2.5889
+2018-02-27 16:08:23,593 seq2seq.trainer.supervised_trainer INFO     Progress: 3%, Train Perplexity: 2.2380
+2018-02-27 16:09:30,952 seq2seq.trainer.supervised_trainer INFO     Progress: 3%, Train Perplexity: 2.0347
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:10:34,462 seq2seq.trainer.supervised_trainer INFO     Finished epoch 2: Train Perplexity: 2.4362, Dev Perplexity: 2.7627, Accuracy: 0.6016, Sequence Accuracy: 0.0115, Variance: 0.0703
+2018-02-27 16:10:34,462 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 3, Step: 230
+2018-02-27 16:11:08,779 seq2seq.trainer.supervised_trainer INFO     Progress: 4%, Train Perplexity: 1.9967
+2018-02-27 16:12:15,764 seq2seq.trainer.supervised_trainer INFO     Progress: 4%, Train Perplexity: 1.8120
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:13:06,697 seq2seq.trainer.supervised_trainer DEBUG    Saved checkpoint var_0.09_acc_0.61_seq_acc_0.01_ppl_2.76_s266
+2018-02-27 16:14:01,941 seq2seq.trainer.supervised_trainer INFO     Progress: 4%, Train Perplexity: 1.7929
+2018-02-27 16:15:18,492 seq2seq.trainer.supervised_trainer INFO     Progress: 5%, Train Perplexity: 1.7635
+2018-02-27 16:16:38,449 seq2seq.trainer.supervised_trainer INFO     Progress: 5%, Train Perplexity: 1.8366
+2018-02-27 16:17:52,988 seq2seq.trainer.supervised_trainer INFO     Progress: 5%, Train Perplexity: 1.7323
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:18:43,584 seq2seq.trainer.supervised_trainer INFO     Finished epoch 3: Train Perplexity: 1.8121, Dev Perplexity: 2.4206, Accuracy: 0.6395, Sequence Accuracy: 0.0273, Variance: 0.0994
+2018-02-27 16:18:43,584 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 4, Step: 345
+2018-02-27 16:19:36,734 seq2seq.trainer.supervised_trainer INFO     Progress: 6%, Train Perplexity: 1.6991
+2018-02-27 16:20:54,668 seq2seq.trainer.supervised_trainer INFO     Progress: 6%, Train Perplexity: 1.6943
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:22:46,666 seq2seq.trainer.supervised_trainer DEBUG    Saved checkpoint var_0.10_acc_0.65_seq_acc_0.04_ppl_2.45_s399
+2018-02-27 16:22:49,395 seq2seq.trainer.supervised_trainer INFO     Progress: 6%, Train Perplexity: 1.6522
+2018-02-27 16:23:58,106 seq2seq.trainer.supervised_trainer INFO     Progress: 7%, Train Perplexity: 1.5344
+2018-02-27 16:25:10,761 seq2seq.trainer.supervised_trainer INFO     Progress: 7%, Train Perplexity: 1.5343
+2018-02-27 16:26:27,632 seq2seq.trainer.supervised_trainer INFO     Progress: 8%, Train Perplexity: 1.4959
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:26:59,727 seq2seq.trainer.supervised_trainer INFO     Finished epoch 4: Train Perplexity: 1.5989, Dev Perplexity: 1.9341, Accuracy: 0.7270, Sequence Accuracy: 0.0722, Variance: 0.0933
+2018-02-27 16:26:59,727 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 5, Step: 460
+2018-02-27 16:28:21,753 seq2seq.trainer.supervised_trainer INFO     Progress: 8%, Train Perplexity: 1.4290
+2018-02-27 16:29:32,010 seq2seq.trainer.supervised_trainer INFO     Progress: 8%, Train Perplexity: 1.4945
+2018-02-27 16:30:40,484 seq2seq.trainer.supervised_trainer INFO     Progress: 9%, Train Perplexity: 1.3673
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:31:54,316 seq2seq.trainer.supervised_trainer DEBUG    Saved checkpoint var_0.11_acc_0.74_seq_acc_0.12_ppl_1.91_s532
+2018-02-27 16:32:23,685 seq2seq.trainer.supervised_trainer INFO     Progress: 9%, Train Perplexity: 1.4550
+2018-02-27 16:33:44,928 seq2seq.trainer.supervised_trainer INFO     Progress: 9%, Train Perplexity: 1.3593
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:35:11,681 seq2seq.trainer.supervised_trainer INFO     Finished epoch 5: Train Perplexity: 1.4054, Dev Perplexity: 1.8663, Accuracy: 0.7676, Sequence Accuracy: 0.1621, Variance: 0.1461
+2018-02-27 16:35:11,681 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 6, Step: 575
+2018-02-27 16:35:23,921 seq2seq.trainer.supervised_trainer INFO     Progress: 10%, Train Perplexity: 1.2701
+2018-02-27 16:36:52,836 seq2seq.trainer.supervised_trainer INFO     Progress: 10%, Train Perplexity: 1.4607
+2018-02-27 16:38:05,315 seq2seq.trainer.supervised_trainer INFO     Progress: 10%, Train Perplexity: 1.2212
+2018-02-27 16:39:22,459 seq2seq.trainer.supervised_trainer INFO     Progress: 11%, Train Perplexity: 1.1781
+2018-02-27 16:40:34,549 seq2seq.trainer.supervised_trainer INFO     Progress: 11%, Train Perplexity: 1.1781
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:41:20,927 seq2seq.trainer.supervised_trainer DEBUG    Saved checkpoint var_0.29_acc_0.84_seq_acc_0.31_ppl_1.48_s665
+2018-02-27 16:42:11,083 seq2seq.trainer.supervised_trainer INFO     Progress: 11%, Train Perplexity: 1.0227
+TODO: Evaluator loss and variance are not correct
+2018-02-27 16:43:18,029 seq2seq.trainer.supervised_trainer INFO     Finished epoch 6: Train Perplexity: 1.1950, Dev Perplexity: 1.4255, Accuracy: 0.8557, Sequence Accuracy: 0.4266, Variance: 0.3194
+2018-02-27 16:43:18,029 seq2seq.trainer.supervised_trainer DEBUG    Epoch: 7, Step: 690
+2018-02-27 16:43:53,511 seq2seq.trainer.supervised_trainer INFO     Progress: 12%, Train Perplexity: 1.0404
+2018-02-27 16:45:02,505 seq2seq.trainer.supervised_trainer INFO     Progress: 12%, Train Perplexity: 1.0043
+2018-02-27 16:46:23,730 seq2seq.trainer.supervised_trainer INFO     Progress: 12%, Train Perplexity: 1.0432
+2018-02-27 16:47:50,726 seq2seq.trainer.supervised_trainer INFO     Progress: 13%, Train Perplexity: 1.0719
+2018-02-27 16:48:53,849 seq2seq.trainer.supervised_trainer INFO     Progress: 13%, Train Perplexity: 0.9173
+slurmstepd: *** JOB 4039221 ON gcn3 CANCELLED AT 2018-02-27T16:48:55 DUE TO TIME LIMIT ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: *** STEP 4039221.0 ON gcn3 CANCELLED AT 2018-02-27T16:48:55 DUE TO TIME LIMIT ***
