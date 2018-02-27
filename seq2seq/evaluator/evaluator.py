@@ -4,7 +4,7 @@ import torch
 import torchtext
 
 import seq2seq
-from seq2seq.loss import NLLLoss
+from seq2seq.loss import NLLLoss, Variance
 
 import numpy as np
 
@@ -20,7 +20,7 @@ class Evaluator(object):
         self.loss = loss
         self.batch_size = batch_size
 
-    def evaluate(self, model, data):
+    def evaluate(self, model, data, reg_scale, writer=None, run_step=0):
         """ Evaluate a model on given dataset and return performance.
 
         Args:
@@ -60,7 +60,6 @@ class Evaluator(object):
 
             # Evaluation
             seqlist = other['sequence']
-
             attentions = [att.squeeze() for att in other['attention_score']]
 
             for q, input_seq in enumerate(input_variables.data):
@@ -101,7 +100,9 @@ class Evaluator(object):
             [[np.mean(att_dict[output_word][input_word]) for input_word in sorted(att_dict[output_word])] for
              output_word in sorted(att_dict)])
 
-
+        if writer is not None:
+            cooccurrences_tensor = torch.Tensor(cooccurrences)
+            writer.add_image("co-occurences", cooccurrences_tensor, run_step)
 
         variance = sum(np.var(cooccurrences, axis=0))
 
@@ -115,4 +116,8 @@ class Evaluator(object):
         else:
             seq_accuracy = seq_match/seq_total
 
-        return loss.get_loss() + 1000*(3.25 - variance), accuracy, seq_accuracy, variance
+        loss.acc_loss += -reg_scale * variance
+
+        print("TODO: Evaluator loss and variance are not correct")
+
+        return loss.get_loss(), accuracy, seq_accuracy, variance
