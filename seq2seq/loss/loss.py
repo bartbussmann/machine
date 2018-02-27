@@ -223,8 +223,7 @@ class Variance2(object):
         confusion_matrix = torch.zeros(output_vocab_size, input_vocab_size)
 
         if torch.cuda.is_available():
-            pass
-            # confusion_matrix = confusion_matrix.cuda()
+            confusion_matrix = confusion_matrix.cuda()
         confusion_matrix = Variable(confusion_matrix)
 
         attention_matrix = torch.cat(attentions).view(len(attentions), attentions[0].size()[0], inputs.size()[1])
@@ -233,8 +232,10 @@ class Variance2(object):
         multiplied_outputs = output_matrix*input_vocab_size
         multiplied_outputs_expanded = multiplied_outputs.unsqueeze(2).expand(multiplied_outputs.size()[0], multiplied_outputs.size()[1], inputs.size()[1])
         indices = (multiplied_outputs_expanded + inputs.expand_as(multiplied_outputs_expanded)).contiguous().view(-1)
+        if torch.cuda.is_available():
+            indices = indices.cuda()
 
-        confusion_matrix.put_(indices.cuda(), attention_matrix.contiguous().view(-1), accumulate=True)
+        confusion_matrix.put_(indices, attention_matrix.contiguous().view(-1), accumulate=True)
 
         # normalise rows
         confusion_matrix = torch.nn.functional.normalize(confusion_matrix, p=1, dim=1)
