@@ -234,7 +234,7 @@ class Variance2(object):
         multiplied_outputs_expanded = multiplied_outputs.unsqueeze(2).expand(multiplied_outputs.size()[0], multiplied_outputs.size()[1], inputs.size()[1])
         indices = (multiplied_outputs_expanded + inputs.expand_as(multiplied_outputs_expanded)).contiguous().view(-1)
 
-        confusion_matrix.put_(indices, attention_matrix.contiguous().view(-1), accumulate=True)
+        confusion_matrix.put_(indices.cuda(), attention_matrix.contiguous().view(-1), accumulate=True)
 
         # normalise rows
         confusion_matrix = torch.nn.functional.normalize(confusion_matrix, p=1, dim=1)

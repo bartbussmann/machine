@@ -103,6 +103,4 @@ class Evaluator(object):
 
         loss.acc_loss += -reg_scale * variance
 
-        print("TODO: Evaluator loss and variance are not correct")
-
         return loss.get_loss(), accuracy, seq_accuracy, variance

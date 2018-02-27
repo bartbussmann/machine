@@ -73,7 +73,7 @@ class SupervisedTrainer(object):
         # add regularization loss
         input_vocab_size = model.encoder.vocab_size
         output_vocab_size = model.decoder.vocab_size
-        variance2, _ = Variance2.get_variance(input_variable, other['sequence'], other['attention_score'], input_vocab_size, output_vocab_size, reg_scale)
+        variance, _ = Variance2.get_variance(input_variable, other['sequence'], other['attention_score'], input_vocab_size, output_vocab_size, reg_scale)
 
         self.writer.add_scalar("variance/train", variance, run_step)
 
