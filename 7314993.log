@@ -1,0 +1,8 @@
+2018-02-09 12:43:58,467 root         INFO     Namespace(attention=True, batch_size=32, bidirectional=False, cuda_device=0, dev='data/CLEANED-SCAN/simple_split/dev.txt', dropout_p_decoder=0.2, dropout_p_encoder=0.2, embedding_size=128, epochs=70, hidden_size=128, load_checkpoint=None, log_level='info', lr=0.001, max_len=50, n_layers=1, optim=None, output_dir='var_exp/', print_every=100, resume=False, rnn_cell='lstm', save_every=100, src_vocab=50000, teacher_forcing_ratio=0.2, tgt_vocab=50000, train='data/CLEANED-SCAN/simple_split/train.txt')
+2018-02-09 12:43:58,819 seq2seq.trainer.supervised_trainer INFO     Optimizer: <torch.optim.adam.Adam object at 0x7f068d0b6080>, Scheduler: None
+2018-02-09 12:45:03,772 seq2seq.trainer.supervised_trainer INFO     Progress: 0%, Train Perplexity: 25.6197
+2018-02-09 12:45:38,186 seq2seq.trainer.supervised_trainer INFO     Progress: 0%, Train Perplexity: 7.1503
+2018-02-09 12:46:12,234 seq2seq.trainer.supervised_trainer INFO     Progress: 1%, Train Perplexity: 5.8069
+2018-02-09 12:46:49,164 seq2seq.trainer.supervised_trainer INFO     Finished epoch 1: Train Perplexity: 9.0998, Dev Perplexity: 2.2238, Accuracy: 0.6801, Sequence Accuracy: 0.0469, Variance: 0.0285
+2018-02-09 12:46:59,744 seq2seq.trainer.supervised_trainer INFO     Progress: 1%, Train Perplexity: 5.2243
+2018-02-09 12:47:37,646 seq2seq.trainer.supervised_trainer INFO     Progress: 1%, Train Perplexity: 4.1038

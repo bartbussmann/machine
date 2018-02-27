@@ -2,7 +2,7 @@
 
 TRAIN_PATH=data/CLEANED-SCAN/simple_split/train.txt
 DEV_PATH=data/CLEANED-SCAN/simple_split/dev.txt
-EXPT_DIR=variance_experiment1
+EXPT_DIR=variance_experiment1_bidirectional
 ATTENTION=true
 CUDA=0
 
@@ -18,7 +18,7 @@ DROPOUT_ENCODER=0.5
 DROPOUT_DECODER=0.5
 TF=0.5
 BATCH_SIZE=128
-BIDIRECTIONAL=false
+BIDIRECTIONAL=true
 PRINT_EVERY=20
 SAVE_EVERY=133 #Batches per epoch (print steps_per_epoch in supervised_trainer.py to find out)
 

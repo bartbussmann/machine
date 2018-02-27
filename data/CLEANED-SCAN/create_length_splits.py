@@ -123,7 +123,56 @@ def create_split(split_on, included, split_name):
     print("Results are in '{}'".format(os.path.join('length_split', split_name)))
     print()
 
-def sample_equally_from_file(split_on, input_file_name, output_file_name, number_of_samples):
+def sample_equally_from_file(split_on, input_file_name, output_file_name):
+    """
+    Creates a train/test split on basis of either input or output length of
+    the examples
+    Args:
+        split_on (str): Split on either 'input' or 'output'
+        included (list): A list of all the lengths that should be included in the
+        split_name (str): Name of the directory in which the train/test files will be stored
+        training set. The rest are in the test set
+    """
+
+    input_file = open(input_file_name, 'r')
+    output_file = open(output_file_name, 'w')
+    dev_file = open(output_file_name + 'dev', 'w')
+
+    lines = input_file
+
+    length_dict = {}
+    num_lines = 0
+
+    for line in lines:
+        num_lines += 1
+        line_stripped = line.strip()
+        input_sequence, output_sequence = line_stripped.split('\t')
+
+        input_sequence_length = len(input_sequence.split())
+        output_sequence_length = len(output_sequence.split())
+
+        if split_on == 'input':
+            sequence_length_to_split_on = input_sequence_length
+        elif split_on == 'output':
+            sequence_length_to_split_on = output_sequence_length
+        else:
+            print("Incorrect argument")
+
+        if sequence_length_to_split_on not in length_dict:
+            length_dict[sequence_length_to_split_on] = [line]
+        else:
+            length_dict[sequence_length_to_split_on].append(line)
+
+
+    for _ in range(num_lines):
+        sampled_length = random.choice(list(length_dict.keys()))
+        sampled_line = random.choice(length_dict[sampled_length])
+        if random.random() > 0.1:
+            output_file.write(sampled_line)
+        else:
+            dev_file.write(sampled_line)
+
+def sample_equally_from_file_all_data(split_on, input_file_name, output_file_name):
     """
     Creates a train/test split on basis of either input or output length of
     the examples
@@ -162,23 +211,34 @@ def sample_equally_from_file(split_on, input_file_name, output_file_name, number
         else:
             length_dict[sequence_length_to_split_on].append(line)
 
+    all_lengths = list(length_dict.keys())
+    max_length_samples = max([len(length_dict[length]) for length in all_lengths])
+    sampled_lines = []
+    for length in all_lengths:
+        for i in range(max_length_samples):
+            sampled_line = length_dict[length][i % len(length_dict[length])]
+            sampled_lines.append(sampled_line)
 
-    for _ in range(num_lines):
-        sampled_length = random.choice(list(length_dict.keys()))
-        sampled_line = random.choice(length_dict[sampled_length])
+    random.shuffle(sampled_lines)
+
+    for sampled_line in sampled_lines:
         output_file.write(sampled_line)
+
 
 
 if __name__ == '__main__':
     show_statistics()
 
-    create_split(split_on='output', included=range(23), split_name='experiment2a_output_short_to_long')
-    create_split(split_on='output', included=range(7, 49), split_name='experiment2b_output_long_to_short')
-    create_split(split_on='output', included=list(range(1, 9)) + list(range(11,19)) + list(range(21, 29)), split_name='experiment2c_output_interleaved_short_to_long')
+    # create_split(split_on='output', included=range(23), split_name='experiment2a_output_short_to_long')
+    # create_split(split_on='output', included=range(7, 49), split_name='experiment2b_output_long_to_short')
+    # create_split(split_on='output', included=list(range(1, 9)) + list(range(11,19)) + list(range(21, 29)), split_name='experiment2c_output_interleaved_short_to_long')
+    #
+    # create_split(split_on='input', included=range(9), split_name='experiment2d_input_short_to_long')
+    # create_split(split_on='input', included=range(7, 10), split_name='experiment2e_input_long_to_short')
+    # create_split(split_on='input', included=[1, 2, 3, 6, 7, 8], split_name='experiment2f_input_interleaved_short_to_long')
 
-    create_split(split_on='input', included=range(9), split_name='experiment2d_input_short_to_long')
-    create_split(split_on='input', included=range(7, 10), split_name='experiment2e_input_long_to_short')
-    create_split(split_on='input', included=[1, 2, 3, 6, 7, 8], split_name='experiment2f_input_interleaved_short_to_long')
+    sample_equally_from_file('output', 'length_split/experiment5/tasks_train.txt', 'length_split/experiment5/output.txt')
 
-    sample_equally_from_file('output', 'length_split/experiment4b_output_long_to_short_equally_distributed/tasks_train.txt', 'length_split/experiment4b_output_long_to_short_equally_distributed/output.txt', 10000)
 
+    #sample_equally_from_file('output', 'length_split/experiment4b_output_long_to_short_equally_distributed/tasks_train.txt', 'length_split/experiment4b_output_long_to_short_equally_distributed/output_all_shuffled.txt')
+    create_split(split_on='output', included=range(22), split_name='22')

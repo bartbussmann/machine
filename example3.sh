@@ -2,7 +2,7 @@
 
 TRAIN_PATH=data/CLEANED-SCAN/simple_split/train.txt
 DEV_PATH=data/CLEANED-SCAN/simple_split/dev.txt
-EXPT_DIR=variance_experiment1
+EXPT_DIR=variance_experiment1_gru
 ATTENTION=true
 CUDA=0
 
@@ -10,7 +10,7 @@ CUDA=0
 EPOCHS=70
 OPTIMIZER='adam'
 LR=0.001
-RNN_CELL='lstm'
+RNN_CELL='gru'
 EMB_SIZE=200
 H_SIZE=200
 N_LAYERS=2

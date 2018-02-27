@@ -2,7 +2,7 @@
 
 TRAIN_PATH=data/CLEANED-SCAN/simple_split/train.txt
 DEV_PATH=data/CLEANED-SCAN/simple_split/dev.txt
-EXPT_DIR=variance_experiment1
+EXPT_DIR=variance_experiment1_2
 ATTENTION=true
 CUDA=0
 
