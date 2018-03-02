@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -N 1          # request 1 node(s)
-#SBATCH -p gpu        # gpu for production, gpu_short for test
-#SBATCH -t 0-09:55:00 # 5 days is the max for gpu, 1 h max for short
+#SBATCH -p gpu_short        # gpu for production, gpu_short for test
+#SBATCH -t 0-00:55:00 # 5 days is the max for gpu, 1 h max for short
 #SBATCH -J jb_test
 #SBATCH -n 1
 
