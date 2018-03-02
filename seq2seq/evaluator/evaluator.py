@@ -42,6 +42,8 @@ class Evaluator(object):
         seq_match = 0
         seq_total = 0
 
+	variance_total = 0
+
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
@@ -87,6 +89,8 @@ class Evaluator(object):
             seq_match += match_per_seq.eq(total_per_seq).sum()
             seq_total += total_per_seq.shape[0]
 
+	    variance_total += variance
+
             if writer is not None:
                 cooccurrences_tensor = coocurrences
                 writer.add_image("co-occurences", cooccurrences_tensor, run_step)
@@ -101,6 +105,6 @@ class Evaluator(object):
         else:
             seq_accuracy = seq_match/seq_total
 
-        loss.acc_loss += -reg_scale * variance
+        loss.acc_loss += -reg_scale * variance_total
 
-        return loss.get_loss(), accuracy, seq_accuracy, variance
+        return loss.get_loss(), accuracy, seq_accuracy, variance_total

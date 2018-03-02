@@ -112,12 +112,14 @@ class SupervisedTrainer(object):
         loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, reg_scale, self.writer, step)
         loss_best = top_k*[loss]
         var_best = top_k*[variance]
+	acc_best = top_k*[seq_accuracy]
         best_checkpoints = top_k*[None]
         model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, 0)
         best_checkpoints[0] = model_name
 
         self.writer.add_scalar("loss/validation", loss, step)
         self.writer.add_scalar("variance/validation", variance, step)
+	self.writer.add_scalar("accuracy/validation", seq_accuracy, step)
 
         Checkpoint(model=model,
                    optimizer=self.optimizer,
@@ -167,14 +169,18 @@ class SupervisedTrainer(object):
                     loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, reg_scale, self.writer, step)
                     max_eval_loss = max(loss_best)
                     max_variance = max(var_best)
+		    max_acc = max(acc_best)
 
                     self.writer.add_scalar("loss/validation", loss, step)
                     self.writer.add_scalar("variance/validation", variance, step)
+		    self.writer.add_scalar("accuracy/validation", seq_accuracy, step)
                     
-                    if loss < max_eval_loss:
+                    #if loss < max_eval_loss:
                     # if variance > max_variance:
-                            index_max = loss_best.index(max_eval_loss)
+		    if seq_accuracy > max_acc:
+                            # index_max = loss_best.index(max_eval_loss)
                             # index_max = var_best.index(max_variance)
+		 	    index_max = acc_best.index(max_acc)
                             # rm prev model
                             if best_checkpoints[index_max] is not None:
                                 shutil.rmtree(os.path.join(self.expt_dir, best_checkpoints[index_max]))
@@ -185,6 +191,7 @@ class SupervisedTrainer(object):
                             best_checkpoints[index_max] = model_name
                             loss_best[index_max] = loss
                             var_best[index_max] = variance
+			    acc_best[index_max] = seq_accuracy
 
                             # save model
                             Checkpoint(model=model,

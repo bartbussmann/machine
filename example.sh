@@ -3,9 +3,9 @@
 nvidia-smi -ac 3004,875 -i 0
 nvidia-smi -ac 3004,875 -i 1
 
-TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment5/train.txt
-DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/dev.txt
-EXPT_DIR=variance_experiment_only_short_primitives_left_right_turn
+TRAIN_PATH=/home/bart/Documents/thesis/machine/data/CLEANED-SCAN/length_split/experiment5/train.txt
+DEV_PATH=/home/bart/Documents/thesis/machine/data/CLEANED-SCAN/length_split/experiment5/test.txt
+EXPT_DIR=experiments/variance_experiment_short_only_all_words_bidirectional
 CUDA=0
 
 # set values
@@ -21,7 +21,7 @@ DROPOUT_DECODER=0.5
 TF=0.5
 BATCH_SIZE=128
 PRINT_EVERY=20
-SAVE_EVERY=133 #Batches per epoch (print steps_per_epoch in supervised_trainer.py to find out)
+SAVE_EVERY=100 #Batches per epoch (print steps_per_epoch in supervised_trainer.py to find out)
 REG_SCALE=1000
 
 # Start training
@@ -42,6 +42,7 @@ python train_model.py \
     --teacher_forcing_ratio $TF \
     --batch_size $BATCH_SIZE \
     --attention \
+    --bidirectional \
     --print_every $PRINT_EVERY \
     --save_every $SAVE_EVERY \
     --log-level 'debug' \
