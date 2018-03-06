@@ -79,8 +79,8 @@ class DecoderRNN(BaseRNN):
         if use_attention != False and attention_method == None:
                 raise ValueError("Method for computing attention should be provided")
 
-        if use_attention == 'post-rnn' and (attention_method == 'mlp' or attention_method == 'concat'):
-                raise NotImplementedError("post-rnn attention with mlp alignment model not implemented")
+        #if use_attention == 'post-rnn' and (attention_method == 'mlp' or attention_method == 'concat'):
+                #raise NotImplementedError("post-rnn attention with mlp alignment model not implemented")
 
         self.attention_method = attention_method
 
@@ -109,7 +109,7 @@ class DecoderRNN(BaseRNN):
 
     def forward_step(self, input_var, hidden, encoder_outputs, function):
 
-        batch_size = input_var.size(0)
+        batch_size = input_var.size(0) 
         output_size = input_var.size(1)
         embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
