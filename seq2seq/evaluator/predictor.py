@@ -1,7 +1,5 @@
 import torch
-
 from torch.autograd import Variable
-import numpy as np
 
 class Predictor(object):
 
@@ -43,9 +41,4 @@ class Predictor(object):
 
         tgt_id_seq = [other['sequence'][di][0].data[0] for di in range(length)]
         tgt_seq = [self.tgt_vocab.itos[tok] for tok in tgt_id_seq]
-
-        att = [att.squeeze() for att in other['attention_score']]
-        attentions = torch.stack(att[:len(tgt_seq)])
-
-
-        return tgt_seq, attentions
+        return tgt_seq

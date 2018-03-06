@@ -1,8 +1,7 @@
 import os
 import argparse
 import logging
-import random
-import time
+
 import torch
 from torch.optim.lr_scheduler import StepLR
 import torchtext
@@ -21,17 +20,6 @@ try:
 except NameError:
     raw_input = input  # Python 3
 
-###############################
-# Add profiler
-import line_profiler as P
-from seq2seq.trainer import SupervisedTrainer as trainer
-from seq2seq.loss import Variance as variance
-profiler = P.LineProfiler()
-profiler.add_function(trainer._train_batch)
-profiler.add_function(variance.get_variance)
-
-############################################################
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--train', help='Training data')
 parser.add_argument('--dev', help='Development data')
@@ -49,10 +37,10 @@ parser.add_argument('--tgt_vocab', type=int, help='target vocabulary size', defa
 parser.add_argument('--dropout_p_encoder', type=float, help='Dropout probability for the encoder', default=0.2)
 parser.add_argument('--dropout_p_decoder', type=float, help='Dropout probability for the decoder', default=0.2)
 parser.add_argument('--teacher_forcing_ratio', type=float, help='Teacher forcing ratio', default=0.2)
-parser.add_argument('--attention', action='store_true')
+parser.add_argument('--attention', choices=['pre-rnn', 'post-rnn'], default=False)
+parser.add_argument('--attention_method', choices=['dot', 'mlp'], default=None)
 parser.add_argument('--batch_size', type=int, help='Batch size', default=32)
 parser.add_argument('--lr', type=float, help='Learning rate, recommended settings.\nrecommended settings: adam=0.001 adadelta=1.0 adamax=0.002 rmsprop=0.01 sgd=0.1', default=0.001)
-parser.add_argument('--reg_scale', type=int, help='Scaling factor for regularization', default=1000)
 
 parser.add_argument('--load_checkpoint', help='The name of the checkpoint to load, usually an encoded time string')
 parser.add_argument('--save_every', type=int, help='Every how many batches the model should be saved', default=100)
@@ -60,7 +48,6 @@ parser.add_argument('--print_every', type=int, help='Every how many batches to p
 parser.add_argument('--resume', action='store_true', help='Indicates if training has to be resumed from the latest checkpoint')
 parser.add_argument('--log-level', default='info', help='Logging level.')
 parser.add_argument('--cuda_device', default=0, type=int, help='set cuda device to use')
-parser.add_argument('--profile', action='store_true')
 
 opt = parser.parse_args()
 
@@ -74,6 +61,10 @@ logging.info(opt)
 if torch.cuda.is_available():
         print("Cuda device set to %i" % opt.cuda_device)
         torch.cuda.set_device(opt.cuda_device)
+
+if opt.attention:
+    if not opt.attention_method:
+        opt.attention_method = 'dot'
 
 ############################################################################
 # Prepare dataset
@@ -132,7 +123,8 @@ else:
     decoder = DecoderRNN(len(tgt.vocab), max_len, decoder_hidden_size,
                          dropout_p=opt.dropout_p_decoder,
                          n_layers=opt.n_layers,
-                         use_attention=True,
+                         use_attention=opt.attention,
+                         attention_method=opt.attention_method,
                          bidirectional=opt.bidirectional,
                          rnn_cell=opt.rnn_cell,
                          eos_id=tgt.eos_id, sos_id=tgt.sos_id)
@@ -142,9 +134,6 @@ else:
 
     for param in seq2seq.parameters():
         param.data.uniform_(-0.08, 0.08)
-
-logging.debug("Input vocab: {}".format(input_vocab.itos))
-logging.debug("Output vocab: {}".format(output_vocab.itos))
 
 ##############################################################################
 # train model
@@ -163,20 +152,13 @@ t = SupervisedTrainer(loss=loss, batch_size=opt.batch_size,
 
 checkpoint_path = os.path.join(opt.output_dir, opt.load_checkpoint) if opt.resume else None
 
-if opt.profile:
-    profiler.run('t.train(seq2seq, train, num_epochs=opt.epochs, dev_data=dev, optimizer=opt.optim, teacher_forcing_ratio=opt.teacher_forcing_ratio, learning_rate=opt.lr, resume=opt.resume, checkpoint_path=checkpoint_path)')
-    profiler.print_stats()
-    exit()
-
 seq2seq = t.train(seq2seq, train,
                   num_epochs=opt.epochs, dev_data=dev,
                   optimizer=opt.optim,
                   teacher_forcing_ratio=opt.teacher_forcing_ratio,
                   learning_rate=opt.lr,
                   resume=opt.resume,
-                  checkpoint_path=checkpoint_path,
-                  reg_scale=opt.reg_scale,
-                  top_k=1)
+                  checkpoint_path=checkpoint_path)
 
 # evaluator = Evaluator(loss=loss, batch_size=opt.batch_size)
 # dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
