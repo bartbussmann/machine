@@ -3,9 +3,9 @@
 nvidia-smi -ac 3004,875 -i 0
 nvidia-smi -ac 3004,875 -i 1
 
-TRAIN_PATH=/home/bart/Documents/thesis/machine/data/CLEANED-SCAN/length_split/experiment5/train.txt
-DEV_PATH=/home/bart/Documents/thesis/machine/data/CLEANED-SCAN/length_split/experiment5/test.txt
-EXPT_DIR=experiments/variance_experiment_short_only_all_words_bidirectional
+TRAIN_PATH=data/CLEANED-SCAN/length_split/experiment5/train.txt
+DEV_PATH=data/CLEANED-SCAN/length_split/experiment5/test.txt
+EXPT_DIR=experiments/attention/h_1024_e_32_post_dot_short
 CUDA=0
 
 # set values
@@ -13,8 +13,8 @@ EPOCHS=70
 OPTIMIZER='adam'
 LR=0.001
 RNN_CELL='lstm'
-EMB_SIZE=200
-H_SIZE=200
+EMB_SIZE=32
+H_SIZE=1024
 N_LAYERS=2
 DROPOUT_ENCODER=0.5
 DROPOUT_DECODER=0.5
@@ -23,8 +23,8 @@ BATCH_SIZE=128
 PRINT_EVERY=20
 SAVE_EVERY=100 #Batches per epoch (print steps_per_epoch in supervised_trainer.py to find out)
 REG_SCALE=1000
-ATTENTION='pre-rnn'
-ATTENTION_METHOD='mlp'
+ATTENTION='post-rnn'
+ATTENTION_METHOD='dot'
 
 # Start training
 echo "Train model on example data"
