@@ -79,7 +79,7 @@ class DecoderRNN(BaseRNN):
         if use_attention != False and attention_method == None:
                 raise ValueError("Method for computing attention should be provided")
 
-        if use_attention == 'post-rnn' and attention_method == 'mlp':
+        if use_attention == 'post-rnn' and (attention_method == 'mlp' or attention_method == 'concat'):
                 raise NotImplementedError("post-rnn attention with mlp alignment model not implemented")
 
         self.attention_method = attention_method

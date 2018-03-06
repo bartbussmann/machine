@@ -1,4 +1,0 @@
-start of job
-srun: error: Invalid task id, 1 >= ntasks
-srun: error: Line 2 of configuration file example.conf invalid
-end of job

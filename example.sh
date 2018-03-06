@@ -23,6 +23,8 @@ BATCH_SIZE=128
 PRINT_EVERY=20
 SAVE_EVERY=100 #Batches per epoch (print steps_per_epoch in supervised_trainer.py to find out)
 REG_SCALE=1000
+ATTENTION='pre-rnn'
+ATTENTION_METHOD='mlp'
 
 # Start training
 echo "Train model on example data"
@@ -41,10 +43,11 @@ python train_model.py \
     --dropout_p_decoder $DROPOUT_DECODER \
     --teacher_forcing_ratio $TF \
     --batch_size $BATCH_SIZE \
-    --attention \
+    --attention $ATTENTION\
+    --attention_method $ATTENTION_METHOD \
     --bidirectional \
     --print_every $PRINT_EVERY \
     --save_every $SAVE_EVERY \
     --log-level 'debug' \
     --cuda_device $CUDA \
-    --reg_scale $REG_SCALE
+    --reg_scale $REG_SCALE\

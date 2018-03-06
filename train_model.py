@@ -38,9 +38,10 @@ parser.add_argument('--dropout_p_encoder', type=float, help='Dropout probability
 parser.add_argument('--dropout_p_decoder', type=float, help='Dropout probability for the decoder', default=0.2)
 parser.add_argument('--teacher_forcing_ratio', type=float, help='Teacher forcing ratio', default=0.2)
 parser.add_argument('--attention', choices=['pre-rnn', 'post-rnn'], default=False)
-parser.add_argument('--attention_method', choices=['dot', 'mlp'], default=None)
+parser.add_argument('--attention_method', choices=['dot', 'mlp', 'concat'], default=None)
 parser.add_argument('--batch_size', type=int, help='Batch size', default=32)
 parser.add_argument('--lr', type=float, help='Learning rate, recommended settings.\nrecommended settings: adam=0.001 adadelta=1.0 adamax=0.002 rmsprop=0.01 sgd=0.1', default=0.001)
+parser.add_argument('--reg_scale', type=int, help='Scaling factor for regularization', default=1000) 
 
 parser.add_argument('--load_checkpoint', help='The name of the checkpoint to load, usually an encoded time string')
 parser.add_argument('--save_every', type=int, help='Every how many batches the model should be saved', default=100)
@@ -158,7 +159,9 @@ seq2seq = t.train(seq2seq, train,
                   teacher_forcing_ratio=opt.teacher_forcing_ratio,
                   learning_rate=opt.lr,
                   resume=opt.resume,
-                  checkpoint_path=checkpoint_path)
+		  reg_scale=opt.reg_scale,
+                  checkpoint_path=checkpoint_path,
+	          top_k=1)
 
 # evaluator = Evaluator(loss=loss, batch_size=opt.batch_size)
 # dev_loss, accuracy = evaluator.evaluate(seq2seq, dev)
