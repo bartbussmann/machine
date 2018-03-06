@@ -108,8 +108,7 @@ class DecoderRNN(BaseRNN):
             self.out = nn.Linear(self.hidden_size, self.output_size)
 
     def forward_step(self, input_var, hidden, encoder_outputs, function):
-
-        batch_size = input_var.size(0) 
+        batch_size = input_var.size(0)
         output_size = input_var.size(1)
         embedded = self.embedding(input_var)
         embedded = self.input_dropout(embedded)
@@ -123,6 +122,7 @@ class DecoderRNN(BaseRNN):
             output, hidden = self.rnn(combined_input, hidden)
 
         elif self.use_attention == 'post-rnn':
+
             output, hidden = self.rnn(embedded, hidden) # for GRU hidden=h, for LSTM (h, c)
             context, attn = self.attention(output, encoder_outputs)
             output = torch.cat((context, output), dim=2)
@@ -168,7 +168,7 @@ class DecoderRNN(BaseRNN):
 
         # Manual unrolling is used to support random teacher forcing.
         # If teacher_forcing_ratio is True or False instead of a probability, the unrolling can be done in graph
-        if use_teacher_forcing and self.use_attention == 'post-rnn':
+        if use_teacher_forcing and self.use_attention == 'post-rnn' and self.attention_method == 'dot':
             decoder_input = inputs[:, :-1]
             decoder_output, decoder_hidden, attn = self.forward_step(decoder_input, decoder_hidden, encoder_outputs,
                                                                      function=function)
@@ -179,6 +179,16 @@ class DecoderRNN(BaseRNN):
                     step_attn = attn[:, di, :]
                 else:
                     step_attn = None
+                decode(di, step_output, step_attn)
+
+        elif use_teacher_forcing and self.use_attention == 'post-rnn' and self.attention_method != 'dot':
+            # unroll computation to apply attention after rnn layer
+            for di in range(inputs.size(1) - 1):
+                decoder_input = inputs[:, di].unsqueeze(1)
+                decoder_output, decoder_hidden, step_attn = self.forward_step(decoder_input, decoder_hidden,
+                                                                              encoder_outputs,
+                                                                              function=function)
+                step_output = decoder_output.squeeze(1)
                 decode(di, step_output, step_attn)
 
         elif use_teacher_forcing and self.use_attention == 'pre-rnn':

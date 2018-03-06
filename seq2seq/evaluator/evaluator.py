@@ -42,7 +42,7 @@ class Evaluator(object):
         seq_match = 0
         seq_total = 0
 
-	variance_total = 0
+        variance_total = 0
 
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
@@ -68,7 +68,7 @@ class Evaluator(object):
             input_vocab_size = model.encoder.vocab_size
             output_vocab_size = model.decoder.vocab_size
             variance, coocurrences = Variance2.get_variance(input_variables, seqlist, other['attention_score'],
-                                                input_vocab_size, output_vocab_size, reg_scale)
+                                                            input_vocab_size, output_vocab_size, reg_scale)
 
             match_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
             total_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
@@ -89,7 +89,7 @@ class Evaluator(object):
             seq_match += match_per_seq.eq(total_per_seq).sum()
             seq_total += total_per_seq.shape[0]
 
-	    variance_total += variance
+            variance_total += variance
 
             if writer is not None:
                 cooccurrences_tensor = coocurrences
