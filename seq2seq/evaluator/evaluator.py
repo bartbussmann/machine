@@ -4,7 +4,9 @@ import torch
 import torchtext
 
 import seq2seq
-from seq2seq.loss import NLLLoss
+from seq2seq.loss import NLLLoss, Variance, Variance2
+
+import numpy as np
 
 class Evaluator(object):
     """ Class to evaluate models with given datasets.
@@ -18,7 +20,7 @@ class Evaluator(object):
         self.loss = loss
         self.batch_size = batch_size
 
-    def evaluate(self, model, data):
+    def evaluate(self, model, data, reg_scale, writer=None, run_step=0):
         """ Evaluate a model on given dataset and return performance.
 
         Args:
@@ -40,6 +42,8 @@ class Evaluator(object):
         seq_match = 0
         seq_total = 0
 
+	variance_total = 0
+
         device = None if torch.cuda.is_available() else -1
         batch_iterator = torchtext.data.BucketIterator(
             dataset=data, batch_size=self.batch_size,
@@ -47,7 +51,9 @@ class Evaluator(object):
             device=device, train=False)
         tgt_vocab = data.fields[seq2seq.tgt_field_name].vocab
         pad = tgt_vocab.stoi[data.fields[seq2seq.tgt_field_name].pad_token]
-
+        #input_words = {k: [0.0] for k in range(1,8)}
+        #att_dict = {j: dict(input_words) for j in range(1, 14)}
+        att_dict = {}
         for batch in batch_iterator:
             input_variables, input_lengths  = getattr(batch, seq2seq.src_field_name)
             target_variables = getattr(batch, seq2seq.tgt_field_name)
@@ -56,6 +62,13 @@ class Evaluator(object):
 
             # Evaluation
             seqlist = other['sequence']
+            attentions = [att.squeeze() for att in other['attention_score']]
+
+            # add regularization loss
+            input_vocab_size = model.encoder.vocab_size
+            output_vocab_size = model.decoder.vocab_size
+            variance, coocurrences = Variance2.get_variance(input_variables, seqlist, other['attention_score'],
+                                                input_vocab_size, output_vocab_size, reg_scale)
 
             match_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
             total_per_seq = torch.zeros(batch.batch_size).type(torch.FloatTensor)
@@ -76,6 +89,12 @@ class Evaluator(object):
             seq_match += match_per_seq.eq(total_per_seq).sum()
             seq_total += total_per_seq.shape[0]
 
+	    variance_total += variance
+
+            if writer is not None:
+                cooccurrences_tensor = coocurrences
+                writer.add_image("co-occurences", cooccurrences_tensor, run_step)
+
         if word_total == 0:
             accuracy = float('nan')
         else:
@@ -86,4 +105,6 @@ class Evaluator(object):
         else:
             seq_accuracy = seq_match/seq_total
 
-        return loss.get_loss(), accuracy, seq_accuracy
+        loss.acc_loss += -reg_scale * variance_total
+
+        return loss.get_loss(), accuracy, seq_accuracy, variance_total
