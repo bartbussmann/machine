@@ -78,7 +78,7 @@ class SupervisedTrainer(object):
         self.writer.add_scalar("variance/train", variance, run_step)
 
         regularizaton = -reg_scale * variance
-        loss.acc_loss += regularizaton 
+        loss.acc_loss += regularizaton
 
         # Backward propagation
         model.zero_grad()
@@ -112,21 +112,20 @@ class SupervisedTrainer(object):
         loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, reg_scale, self.writer, step)
         loss_best = top_k*[loss]
         var_best = top_k*[variance]
-	acc_best = top_k*[seq_accuracy]
+        acc_best = top_k*[seq_accuracy]
         best_checkpoints = top_k*[None]
         model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, 0)
         best_checkpoints[0] = model_name
 
         self.writer.add_scalar("loss/validation", loss, step)
         self.writer.add_scalar("variance/validation", variance, step)
-	self.writer.add_scalar("accuracy/validation", seq_accuracy, step)
+        self.writer.add_scalar("accuracy/validation", seq_accuracy, step)
 
         Checkpoint(model=model,
                    optimizer=self.optimizer,
                    epoch=start_epoch, step=start_step,
                    input_vocab=data.fields[seq2seq.src_field_name].vocab,
                    output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name=model_name)
-
 
         for epoch in range(start_epoch, n_epochs + 1):
             log.debug("Epoch: %d, Step: %d" % (epoch, step))
@@ -169,36 +168,36 @@ class SupervisedTrainer(object):
                     loss, accuracy, seq_accuracy, variance = self.evaluator.evaluate(model, eval_data, reg_scale, self.writer, step)
                     max_eval_loss = max(loss_best)
                     max_variance = max(var_best)
-		    max_acc = max(acc_best)
+                    max_acc = max(acc_best)
 
                     self.writer.add_scalar("loss/validation", loss, step)
                     self.writer.add_scalar("variance/validation", variance, step)
-		    self.writer.add_scalar("accuracy/validation", seq_accuracy, step)
-                    
-                    #if loss < max_eval_loss:
+                    self.writer.add_scalar("accuracy/validation", seq_accuracy, step)
+
+                    # if loss < max_eval_loss:
                     # if variance > max_variance:
-		    if seq_accuracy > max_acc:
-                            # index_max = loss_best.index(max_eval_loss)
-                            # index_max = var_best.index(max_variance)
-		 	    index_max = acc_best.index(max_acc)
-                            # rm prev model
-                            if best_checkpoints[index_max] is not None:
-                                shutil.rmtree(os.path.join(self.expt_dir, best_checkpoints[index_max]))
-                            model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, step)
+                    if seq_accuracy > max_acc:
+                        # index_max = loss_best.index(max_eval_loss)
+                        # index_max = var_best.index(max_variance)
+                        index_max = acc_best.index(max_acc)
+                        # rm prev model
+                        if best_checkpoints[index_max] is not None:
+                            shutil.rmtree(os.path.join(self.expt_dir, best_checkpoints[index_max]))
+                        model_name = 'var_%.2f_acc_%.2f_seq_acc_%.2f_ppl_%.2f_s%d' % (variance, accuracy, seq_accuracy, loss, step)
 
-                            self.logger.debug("Saved checkpoint {}".format(model_name))
+                        self.logger.debug("Saved checkpoint {}".format(model_name))
 
-                            best_checkpoints[index_max] = model_name
-                            loss_best[index_max] = loss
-                            var_best[index_max] = variance
-			    acc_best[index_max] = seq_accuracy
+                        best_checkpoints[index_max] = model_name
+                        loss_best[index_max] = loss
+                        var_best[index_max] = variance
+                        acc_best[index_max] = seq_accuracy
 
-                            # save model
-                            Checkpoint(model=model,
-                                       optimizer=self.optimizer,
-                                       epoch=epoch, step=step,
-                                       input_vocab=data.fields[seq2seq.src_field_name].vocab,
-                                       output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name=model_name)
+                        # save model
+                        Checkpoint(model=model,
+                                   optimizer=self.optimizer,
+                                   epoch=epoch, step=step,
+                                   input_vocab=data.fields[seq2seq.src_field_name].vocab,
+                                   output_vocab=data.fields[seq2seq.tgt_field_name].vocab).save(self.expt_dir, name=model_name)
 
             if step_elapsed == 0: continue
 
@@ -261,7 +260,7 @@ class SupervisedTrainer(object):
                 optims = {'adam': optim.Adam, 'adagrad': optim.Adagrad,
                           'adadelta': optim.Adadelta, 'adamax': optim.Adamax,
                           'rmsprop': optim.RMSprop, 'sgd': optim.SGD,
-                           None:optim.Adam}
+                          None:optim.Adam}
                 return optims[optim_name]
 
             self.optimizer = Optimizer(get_optim(optimizer)(model.parameters(), lr=learning_rate),
